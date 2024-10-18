@@ -54,7 +54,7 @@ namespace ArangoDBNetStandard.IndexApi
         /// <param name="indexId">The identifier of the index.</param>
         /// <param name="token">A CancellationToken to observe while waiting for the task to complete or to cancel the task.</param>
         /// <returns></returns>
-        public virtual async Task<GetIndexResponse> GetIndexAsync(string indexId,
+        public virtual async Task<T> GetIndexAsync<T>(string indexId,
             CancellationToken token = default)
         {
             string uri = _indexApiPath + '/' + indexId;
@@ -63,10 +63,22 @@ namespace ArangoDBNetStandard.IndexApi
                 if (response.IsSuccessStatusCode)
                 {
                     var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                    return await DeserializeJsonFromStreamAsync<GetIndexResponse>(stream).ConfigureAwait(false);
+                    return await DeserializeJsonFromStreamAsync<T>(stream).ConfigureAwait(false);
                 }
                 throw await GetApiErrorExceptionAsync(response).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Fetches data about the specified index.
+        /// </summary>
+        /// <param name="indexId">The identifier of the index.</param>
+        /// <param name="token">A CancellationToken to observe while waiting for the task to complete or to cancel the task.</param>
+        /// <returns></returns>
+        public virtual async Task<GetIndexResponse> GetIndexAsync(string indexId,
+            CancellationToken token = default)
+        {
+            return await GetIndexAsync<GetIndexResponse>(indexId, token);
         }
 
         /// <summary>
